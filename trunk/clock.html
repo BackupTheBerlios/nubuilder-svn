@@ -1,0 +1,26 @@
+<form name="myForm" action="" method="POST">
+<input name="myClock" type="Text">
+<script language=javascript>
+
+self.setInterval('clock()', 2000)
+
+function clock() {
+    time=new Date()
+    document.myForm.myClock.value=document.myForm.myClock.value-0+1;
+//    document.myForm.myClock.value=time
+//if(document.myForm.myClock.value==3){window.close();}
+
+
+
+
+   if(document.myForm.myClock.value==3){
+      //window.open('close1.html');
+      document.location.href = 'close1.html';
+   }
+
+
+
+}
+
+</script>
+</form>
