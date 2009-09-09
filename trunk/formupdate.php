@@ -3,7 +3,9 @@
 ** File:           formupdate.php
 ** Author:         nuSoftware
 ** Created:        2007/04/26
-** Last modified:  2009/06/22
+** Last modified:  2009/07/15
+**
+** Copyright 2004, 2005, 2006, 2007, 2008, 2009 nuSoftware
 **
 ** This file is part of the nuBuilder source package and is licensed under the
 ** GPLv3. For support on developing in nuBuilder, please visit the nuBuilder
@@ -137,6 +139,7 @@ for($i = 0 ; $i < $_POST['TheSubforms'] ; $i++){
 	$sysVariables                       = postVariablesToHashArray();                                    //--values in $_POST
 	$arrayOfHashVariables               = joinHashArrays($sysVariables, $sesVariables);                  //--join the arrays together
     $arrayOfHashVariables['#newID#']    = $recordID;
+	$nuHashVariables                    = $arrayOfHashVariables;   //--added by sc 23-07-2009
 
 //----------allow for custom code----------------------------------------------
 

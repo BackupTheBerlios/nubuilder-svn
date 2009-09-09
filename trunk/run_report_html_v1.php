@@ -3,7 +3,9 @@
 ** File:           run_report_html_v1.php
 ** Author:         nuSoftware
 ** Created:        2007/04/26
-** Last modified:  2009/06/22
+** Last modified:  2009/07/15
+**
+** Copyright 2004, 2005, 2006, 2007, 2008, 2009 nuSoftware
 **
 ** This file is part of the nuBuilder source package and is licensed under the
 ** GPLv3. For support on developing in nuBuilder, please visit the nuBuilder
@@ -16,7 +18,6 @@
 */
 
 function run_html_report(){
-
 	$parameters                      = $_GET['ses'];
 	$form_ses                        = $_GET['form_ses'];
 	$report                          = $_GET['r'];
@@ -912,7 +913,7 @@ class reportDisplay{
 	public function buildStyleSheet(){
 		
 		$s                                  = '';
-		$s                                  = $s . "<html>\n<title></title>\n";
+		$s                                  = $s . "<html><!--version 1-->\n<title></title>\n";
 		$s                                  = $s . "<script type='text/javascript' src='common.js' language='javascript'></script>\n";
 		$s                                  = $s . "<style type='text/css'>\n";
 

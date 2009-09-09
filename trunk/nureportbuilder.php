@@ -3,7 +3,9 @@
 ** File:           nureportbuilder.php
 ** Author:         nuSoftware
 ** Created:        2007/04/26
-** Last modified:  2009/06/22
+** Last modified:  2009/07/15
+**
+** Copyright 2004, 2005, 2006, 2007, 2008, 2009 nuSoftware
 **
 ** This file is part of the nuBuilder source package and is licensed under the
 ** GPLv3. For support on developing in nuBuilder, please visit the nuBuilder
@@ -25,28 +27,28 @@ include('common.php');
 	$t           = nuRunQuery("SELECT sat_report_display_code FROM zzsys_activity WHERE zzsys_activity_id = '$reportID'");
 	$r           = db_fetch_row($t);
 	if($r[0]==''){
-		eval('class Reporting{var $nuBuilder = "1";var $Controls = array();var $Sections = array();var $Groups = array();var $Width = "900";var $Height = "";function Reporting(){}}');
+		eval('class Reporting{var $nuBuilder = "1";var $Controls = array();var $Sections = array();var $Groups = array();var $Width = "900px";var $Height = "";function Reporting(){}}');
 	}else{
 		eval($r[0]);
 	}
 	
 ?>
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 
 <style TYPE='text/css'>
-.moveup            {position:relative;background-color:gray;border:solid;border-width:1;color:white;border-color:black}
-.delSection        {position:relative;background-color:gray;border:solid;border-width:1;color:white;border-color:black}
+.moveup            {position:relative;background-color:gray;border:solid;border-width:1px;color:white;border-color:black}
+.delSection        {position:relative;background-color:gray;border:solid;border-width:1px;color:white;border-color:black}
 .theObject         {cursor:default;overflow:hidden;position:absolute;}
-.theHeader         {position:absolute;font-size:14;color:white;background-color:black;height:10;}
-.thePropertyLeft   {position:absolute;font-size:14;color:white;height:10;left:10}
-.thePropertyRight  {position:absolute;font-size:14;color:white;height:10;left:200;width:400}
-.thesortorderRight {position:absolute;font-size:14;color:white;height:10;left:330;width:400}
-.thesortorderLeft {position:absolute;font-size:14;color:white;height:10;left:20;width:300}
+.theHeader         {position:absolute;font-size:14px;color:white;background-color:black;height:10px;}
+.thePropertyLeft   {position:absolute;font-size:14px;color:white;height:10px;left:10px}
+.thePropertyRight  {position:absolute;font-size:14px;color:white;height:10px;left:200px;width:400px}
+.thesortorderRight {position:absolute;font-size:14px;color:white;height:10px;left:330px;width:400px}
+.thesortorderLeft {position:absolute;font-size:14px;color:white;height:10px;left:20px;width:300px}
 </style>
 
 
-<script language='javascript'>
+<script type='text/javascript'>
 
    var theaction           = '';
    var offsetX             = 0;
@@ -74,11 +76,11 @@ function dbgwnd(text) {
 		g_dbgwnd = window.open('about:blank', '_blank', 'location=no, menubar=no, status=no, toolbar=no, resizable=yes');
 	
 		// Set up the base HTML document
-		g_dbgwnd.document.write('<html><head><title>Debug Window</title></head><body style="font-family: monospace;"><h2>Debugging Output</h2><br/>\n');
+		g_dbgwnd.document.write('<html><head><title>Debug Window</title></head><body style="font-family: monospace;"><h2>Debugging Output</h2>');
 	}
 	
 	// Write the debugging text to the page
-	g_dbgwnd.document.write(text + '<br/>\n');
+	g_dbgwnd.document.write(text + ' |');
 }
    
 //-------------------------------END DEBUG WINDOW-------------   
@@ -101,6 +103,9 @@ function nuDebug(){
 
 function buildClass(){
 	//dumpCustomStyleArray(); //dump all the custom values to the debug box
+	if(!checkBeforeSave()){
+		return;
+	}
 	var r = "";
 	var s = "";
 	var c = "";
@@ -110,9 +115,9 @@ function buildClass(){
 	r = r + "   var $Controls           = array();\n";
 	r = r + "   var $Sections           = array();\n";
 	r = r + "   var $Groups             = array();\n";
-	r = r + "   var $Version            = '2';\n";
-	r = r + "   var $Width              = '" + document.getElementById('rproperty00').value + "';\n";
-	r = r + "   var $Height             = '" + document.getElementById('rproperty01').value + "';\n";
+	r = r + "   var $Version            = '3';\n";
+	r = r + "   var $Width              = '" + parseInt(document.getElementById('rproperty00').value) + "';\n";
+	r = r + "   var $Height             = '" + parseInt(document.getElementById('rproperty01').value) + "';\n";
 	r = r + "   var $PaperType          = '" + document.getElementById('rproperty02').value + "';\n";
 	r = r + "   var $Orientation        = '" + document.getElementById('rproperty03').value + "';\n\n";
 	r = r + "\n   function Reporting(){";
@@ -123,7 +128,7 @@ function buildClass(){
 		curDiv  = document.getElementById(reportSection[i]);
 		s = s + "      $this->Sections[" + curSection + "]->Name                = '" + reportSection[i] +"';\n";
 		s = s + "      $this->Sections[" + curSection + "]->ControlType         = '"   + curSection +"';\n";
-		s = s + "      $this->Sections[" + curSection + "]->Height              = '"   + getStyle(reportSection[i], 'height') + "';\n";
+		s = s + "      $this->Sections[" + curSection + "]->Height              = '"   + parseInt(getStyle(reportSection[i], 'height'))+ "';\n";
 		s = s + "      $this->Sections[" + curSection + "]->BackColor           = '"   + reformatHexOrRGBToHex(getStyle(reportSection[i], 'backgroundColor')) +"';\n";
 		s = s + "      $this->Sections[" + curSection + "]->Tag                 = '"   + getStyle(reportSection[i],'tag') +"';\n";
 		s = s + "      $this->Sections[" + curSection + "]->SectionNumber       = '"   + curSection +"';\n\n";
@@ -154,21 +159,21 @@ function buildClass(){
 					c = c + "      $this->Controls[" + obNumber + "]->ControlSource       = '"   + fixValue                             + "';\n";
 					c = c + "      $this->Controls[" + obNumber + "]->Caption             = '"   + fixValue                             + "';\n";
 					c = c + "      $this->Controls[" + obNumber + "]->Value               = '"   + fixValue                             + "';\n";
-					c = c + "      $this->Controls[" + obNumber + "]->Top                 = '"   + getStyle(obID, 'top')                + "';\n";
-					c = c + "      $this->Controls[" + obNumber + "]->Left                = '"   + getStyle(obID, 'left')               + "';\n";
-					c = c + "      $this->Controls[" + obNumber + "]->Width               = '"   + getStyle(obID, 'width')              + "';\n";
-					c = c + "      $this->Controls[" + obNumber + "]->Height              = '"   + getStyle(obID, 'height')             + "';\n";
-					c = c + "      $this->Controls[" + obNumber + "]->ForeColor           = '"   + getStyle(obID, 'color')              + "';\n";
+					c = c + "      $this->Controls[" + obNumber + "]->Top                 = '"   + parseInt(getStyle(obID, 'top'))+ "';\n";
+					c = c + "      $this->Controls[" + obNumber + "]->Left                = '"   + parseInt(getStyle(obID, 'left'))+ "';\n";
+					c = c + "      $this->Controls[" + obNumber + "]->Width               = '"   + parseInt(getStyle(obID, 'width'))+ "';\n";
+					c = c + "      $this->Controls[" + obNumber + "]->Height              = '"   + parseInt(getStyle(obID, 'height'))+ "';\n";
+					c = c + "      $this->Controls[" + obNumber + "]->ForeColor           = '"   + reformatHexOrRGBToHex(getStyle(obID, 'color'))              + "';\n";
 					c = c + "      $this->Controls[" + obNumber + "]->FontSize            = '"   + parseInt(getStyle(obID, 'fontSize')) + "';\n";
 					c = c + "      $this->Controls[" + obNumber + "]->FontWeight          = '"   + getStyle(obID, 'fontWeight')         + "';\n";
 					c = c + "      $this->Controls[" + obNumber + "]->FontName            = '"   + getStyle(obID, 'fontFamily')         + "';\n";
-					c = c + "      $this->Controls[" + obNumber + "]->BackColor           = '"   + getStyle(obID, 'backgroundColor')    + "';\n";
+					c = c + "      $this->Controls[" + obNumber + "]->BackColor           = '"   + reformatHexOrRGBToHex(getStyle(obID, 'backgroundColor'))    + "';\n";
 					if(getStyle(obID, 'name') == document.getElementById('currentID').value){
-						c = c + "      $this->Controls[" + obNumber + "]->BorderWidth         = '"   + reformatWidth(getStyle(obID, 'widthwas'))    + "';\n";
+						c = c + "      $this->Controls[" + obNumber + "]->BorderWidth         = '"   + parseInt(getStyle(obID, 'widthwas'))    + "';\n";
 						c = c + "      $this->Controls[" + obNumber + "]->BorderColor         = '"   + reformatHexOrRGBToHex(getStyle(obID, 'colorwas'))                   + "';\n";
 					}else{
-						c = c + "      $this->Controls[" + obNumber + "]->BorderWidth         = '"   + reformatWidth(getStyle(obID, 'borderWidth')) + "';\n";
-						c = c + "      $this->Controls[" + obNumber + "]->BorderColor         = '"   + reformatHexOrRGBToHex(getStyle(obID, 'borderLeftColor'))                + "';\n";
+						c = c + "      $this->Controls[" + obNumber + "]->BorderWidth         = '"   + parseInt(getStyle(obID, 'borderWidth')) + "';\n";
+						c = c + "      $this->Controls[" + obNumber + "]->BorderColor         = '"   + reformatHexOrRGBToHex(getStyle(obID, 'borderTopColor'))                + "';\n";
 					}
 					c = c + "      $this->Controls[" + obNumber + "]->Graph               = '"   + graphCode                            + "';\n";
 					c = c + "      $this->Controls[" + obNumber + "]->CanGrow             = '"   + getStyle(obID, 'cangrow')            + "';\n";
@@ -198,22 +203,50 @@ function buildClass(){
 	document.getElementById('classcode').value = s;
     copyClass();
 }
+
+
+function checkBeforeSave(){
+	//check the report height
+	if(isNaN(parseInt(document.getElementById('rproperty00').value))){
+		alert("Please input a width for the report");
+		return false;
+	}
+	//check the report width
+	if(isNaN(parseInt(document.getElementById('rproperty01').value))){
+		alert("Please input a height for the report");
+		return false;
+	}
+	return true;
+}
+
 //added by nick
-//ensures that width is written as "NUMBERpx"
-function reformatWidth(pxString){
+//ensures that lengths is written as "NUMBERpx"
+function reformatLength(pxString){
 	return parseInt(pxString) + "px";
 }
 
+function reformatPt(ptString){
+	return parseInt(ptString) + "pt";
+}
+
 function reformatHexOrRGBToHex(colorstr){
-	//alert(colorstr);
-	var result = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(colorstr);
-	if(result){
-		colorstr = '#'+parseInt(result[1]).toString(16)+parseInt(result[2]).toString(16)+parseInt(result[3]).toString(16);
+	colorstr = colorstr.toLowerCase();
+	if(colorstr.substr(0,3) == 'rgb'){
+		colorstr = colorstr.replace(/rgb|\(|\)/g,'');
+		var split = colorstr.split(',');
+		var ra = parseInt(split[0]);
+		var ga = parseInt(split[1]);
+		var ba = parseInt(split[2]);
+		var r = ra.toString(16);
+		var g = ga.toString(16);
+		var b = ba.toString(16);
+		if (r.length == 1) r = '0' + r;
+        if (g.length == 1) g = '0' + g;
+        if (b.length == 1) b = '0' + b;
+		//alert(ra+' '+ga+' '+ba+"->#"+r+g+b);
+		return '#' + r + g + b;
 	}
-	if(colorstr == 'rgb(0, 0, 0)'){
-		colorstr = '#'+'00'+'00'+'00';
-	}
-	return colorstr
+	return colorstr;
 }
 
 //added by nick
@@ -313,7 +346,7 @@ function reportSectionRequery(){
 	for(sl = 0 ; sl < 8 ; sl++){
 		if(document.getElementById('property0'+sl).value!=''){
 			arrayNo = arrayNo + 1;
-			reportSection[arrayNo] = document.getElementById('property0'+sl).value+'_Header'
+			reportSection[arrayNo] = document.getElementById('property0'+sl).value+'_Header';
 		}
 	}
 
@@ -323,7 +356,7 @@ function reportSectionRequery(){
 	for(sl = 7 ; sl > -1 ; sl--){
 		if(document.getElementById('property0'+sl).value!=''){
 			arrayNo = arrayNo + 1;
-			reportSection[arrayNo] = document.getElementById('property0'+sl).value+'_Footer'
+			reportSection[arrayNo] = document.getElementById('property0'+sl).value+'_Footer';
 		}
 	}
 
@@ -497,25 +530,25 @@ function newObject(pID){
 
 
    document.getElementById('Detail').appendChild(newObj);
-   setStyle(newID, 'top', '0')
-   setStyle(newID, 'left', '0')
-   setStyle(newID, 'width', '150')
-   setStyle(newID, 'height', '20')
+   setStyle(newID, 'top', '0px')
+   setStyle(newID, 'left', '0px')
+   setStyle(newID, 'width', '150px')
+   setStyle(newID, 'height', '20px')
    setStyle(newID, 'position', 'absolute')
    setStyle(newID, 'borderStyle', 'solid')
-   setStyle(newID, 'borderWidth', '1')
+   setStyle(newID, 'borderWidth', '1px')
    setStyle(newID, 'borderColor', 'black')
-   setStyle(newID, 'widthwas', '1')
+   setStyle(newID, 'widthwas', '1px')
    setStyle(newID, 'colorwas', 'black')
    setStyle(newID, 'name', newID)
    setStyle(newID, 'type', 'Field')
    setStyle(newID, 'value', '')
    setStyle(newID, 'tag', pID)
    setStyle(newID, 'color', 'black')
-   setStyle(newID, 'fontSize', '10')
+   setStyle(newID, 'fontSize', '10px')
    setStyle(newID, 'fontFamily', 'Arial')
    setStyle(newID, 'backgroundColor', 'white')
-   setStyle(newID, 'borderWidth', '1')
+   setStyle(newID, 'borderWidth', '1px')
    setStyle(newID, 'borderColor', 'black')
    setStyle(newID, 'graph', '')
    setStyle(newID, 'cangrow', 'false')
@@ -607,8 +640,8 @@ function mouseDown(e,pThis){
    //debugCon("|par: " + pThis.parentNode.id + " |");
    //debugCon("|left: " + pThis.style.left + " top: " + pThis.style.top + " position: " + pThis.style.position + "|");
    //debugCon("|par left: " + pThis.parentNode.style.left + " par top: " + pThis.parentNode.style.top + " position: " + pThis.parentNode.style.position + "|");
-   if(!cObject.style.left){cObject.style.left = '0';}
-   if(!cObject.style.top) {cObject.style.top  = '0';}
+   if(!cObject.style.left){cObject.style.left = '0px';}
+   if(!cObject.style.top) {cObject.style.top  = '0px';}
 
    offsetX                 = e.clientX - parseInt(cObject.style.left);
    offsetY                 = e.clientY - parseInt(cObject.style.top);
@@ -648,8 +681,8 @@ function mouseMove(e){
       //pThis.style.width   = e.clientX - parseInt(pThis.style.left) - sizeX;
       //pThis.style.height  = e.clientY - parseInt(pThis.style.top)  - sizeY;
    }else{
-      pThis.style.left    = e.clientX - offsetX;
-      pThis.style.top     = e.clientY - offsetY;
+      pThis.style.left    = e.clientX - offsetX + 'px';
+      pThis.style.top     = e.clientY - offsetY + 'px';
    }
    
 }
@@ -755,14 +788,7 @@ function setBGStyle(pID, pValue){
 		document.getElementById(pID).style['backgroundColor'] = '#ebebeb';
 	}else{
 		document.getElementById(pID).style['backgroundColor'] = pValue;
-	}
-	if(pStyle!='height'){return;}
-	if(parseInt(document.getElementById(pID).style.height) == 0){
-		document.getElementById(pID).style.borderColor = 'lightgrey';
-	}else{
-		document.getElementById(pID).style.borderColor = 'black';
-	}
-	
+	}	
 }
 
 function setValue(pID, pValue){
@@ -778,21 +804,21 @@ function setTag(pID, pTag){
 	setStyle(pID, 'type', pTag);
 	if(pTag == 'PageBreak'){
 		setStyle(pID, 'borderColor', 'black');
-		setStyle(pID, 'borderWidth', '4');
-		setStyle(pID, 'height', '4');
-		setStyle(pID, 'width', '44');
-		setStyle(pID, 'left', '0');
+		setStyle(pID, 'borderWidth', '4px');
+		setStyle(pID, 'height', '4px');
+		setStyle(pID, 'width', '44px');
+		setStyle(pID, 'left', '0px');
 	}
 	if(pTag == 'Graph'){
 		setStyle(pID, 'backgroundColor', 'black');
 		setStyle(pID, 'color', 'white');
-		setStyle(pID, 'fontSize', '12');
+		setStyle(pID, 'fontSize', '12px');
 	}
 	if(itWas == 'PageBreak'){
 		setStyle(pID, 'borderColor', 'black');
-		setStyle(pID, 'borderWidth', '1');
-		setStyle(pID, 'height', '20');
-		setStyle(pID, 'width', '44');
+		setStyle(pID, 'borderWidth', '1px');
+		setStyle(pID, 'height', '20px');
+		setStyle(pID, 'width', '44px');
 	}
 	loadObjectProperties(document.getElementById(pID));
 }
@@ -845,15 +871,20 @@ function newObjectID(){
 
 
 function loadObjectProperties(pThis){
-	debugCon("|load obj properties|");
+	//debugCon("|load obj properties|");
 	pID   = pThis.id;
 	if(document.getElementById('currentID').value!=''){
 		restoreBorder(document.getElementById('currentID').value);
 	}
+	if(pID == document.getElementById('currentID').value){
+		//alert('you have already selected that!');
+		return;
+	}
 	document.getElementById('currentID').value = pID;
-	setStyle(pID, 'widthwas', getStyle(pID, 'borderLeftWidth'))
-	setStyle(pID, 'colorwas', getStyle(pID, 'borderLeftColor'))
-	setStyle(pID, 'borderWidth', '2');
+	//alert(getStyle(pID, 'borderTopWidth'));
+	setStyle(pID, 'widthwas', getStyle(pID, 'borderTopWidth'))
+	setStyle(pID, 'colorwas', getStyle(pID, 'borderTopColor'))
+	setStyle(pID, 'borderWidth', '2px');
 	setStyle(pID, 'borderColor', 'red');
 	setStyle(pID, 'borderStyle', 'dotted double');
 	replacePropertyDescription('object','00', 'Control Type');
@@ -889,11 +920,11 @@ function loadObjectProperties(pThis){
 	replacePropertyValueSelect('object', '00', pThis.tag,                    true, theControl,    'setTag("'+pID+'", this.value)');
 	replacePropertyValueSelect('object', '01', pThis.parentNode.id,          true, reportSection, 'moveToSection("'+pID+'", this.value)');
 	replacePropertyValueInput('object', '02',  pThis.value,                  true,                'setValue("'+pID+'", this.value)')
-	replacePropertyValueInput('object', '03',  getStyle(pID, 'top'),         true,                'setStyle("'+pID+'", "top", this.value)');
-	replacePropertyValueInput('object', '04',  getStyle(pID, 'left'),        true,                'setStyle("'+pID+'", "left", this.value)');
-	replacePropertyValueInput('object', '05',  getStyle(pID, 'width'),       true,                'setStyle("'+pID+'", "width", this.value)');
-	replacePropertyValueInput('object', '06',  getStyle(pID, 'height'),      true,                'setStyle("'+pID+'", "height", this.value)');
-	replacePropertyValueInput('object', '07',  getStyle(pID, 'widthwas'),    true,                'setStyle("'+pID+'", "widthwas", this.value)');
+	replacePropertyValueInput('object', '03',  getStyle(pID, 'top'),         true,                'setStyle("'+pID+'", "top", reformatLength(this.value))');
+	replacePropertyValueInput('object', '04',  getStyle(pID, 'left'),        true,                'setStyle("'+pID+'", "left", reformatLength(this.value))');
+	replacePropertyValueInput('object', '05',  getStyle(pID, 'width'),       true,                'setStyle("'+pID+'", "width", reformatLength(this.value))');
+	replacePropertyValueInput('object', '06',  getStyle(pID, 'height'),      true,                'setStyle("'+pID+'", "height", reformatLength(this.value))');
+	replacePropertyValueInput('object', '07',  getStyle(pID, 'widthwas'),    true,                'setStyle("'+pID+'", "widthwas", reformatLength(this.value))');
 	replacePropertyValueInput('object', '08',  getStyle(pID, 'colorwas'),    true,                'setStyle("'+pID+'", "colorwas", this.value)');
 	if(pThis.tag == 'Graph'){
 		replacePropertyValueSelect('object', '09', getStyle(pID, 'graph'), true, theGraph, 'setStyle("'+pID+'", "graph", this.value)');
@@ -906,7 +937,7 @@ function loadObjectProperties(pThis){
 		replacePropertyValueSelect('object', '16',  getStyle(pID, 'cangrow'),    false, theAnswer,'');	
 	}else{
 		replacePropertyValueInput('object', '09',  getStyle(pID, 'color'),           true,            'setStyle("'+pID+'", "color", this.value)');
-		replacePropertyValueInput('object', '10',  getStyle(pID, 'fontSize'),        true,            'setStyle("'+pID+'", "fontSize", this.value)');
+		replacePropertyValueInput('object', '10',  getStyle(pID, 'fontSize'),        true,            'setStyle("'+pID+'", "fontSize", reformatLength(this.value))');
 		replacePropertyValueSelect('object', '11', getStyle(pID, 'fontWeight'),      true, theWeight, 'setStyle("'+pID+'", "fontWeight", this.value)');
 		replacePropertyValueSelect('object', '12', getStyle(pID, 'fontFamily'),      true, theFamily, 'setStyle("'+pID+'", "fontFamily", this.value)');
 		replacePropertyValueInput('object',  '13', getStyle(pID, 'backgroundColor'), true,            'setStyle("'+pID+'", "backgroundColor", this.value)');
@@ -981,7 +1012,7 @@ function loadSectionProperties(pThis){
 	pSec = head;
 	pID  = head.id;
 	replacePropertyValueInput('section','00', pSec.id, true, '');
-	replacePropertyValueInput('section','01', getStyle(pID, 'height'), true, 'setStyle("'+pID+'", "height", this.value)');
+	replacePropertyValueInput('section','01', getStyle(pID, 'height'), true, 'setStyle("'+pID+'", "height", reformatLength(this.value))');
 	replacePropertyValueInput('section','02', getStyle(pID, 'backgroundColor'), true, 'setBGStyle("'+pID+'", this.value)');
 
 	replacePropertyValueInput('section','03', '', false, '');
@@ -993,7 +1024,7 @@ function loadSectionProperties(pThis){
 	pSec = foot;
 	pID  = foot.id;
 	replacePropertyValueInput('section','08', pSec.id, notDetail, '');
-	replacePropertyValueInput('section','09', getStyle(pID, 'height'), notDetail, 'setStyle("'+pID+'", "height", this.value)');
+	replacePropertyValueInput('section','09', getStyle(pID, 'height'), notDetail, 'setStyle("'+pID+'", "height", reformatLength(this.value))');
 	replacePropertyValueInput('section','10', getStyle(pID, 'backgroundColor'), notDetail, 'setStyle("'+pID+'", "backgroundColor", this.value)');
 
 }
@@ -1051,6 +1082,7 @@ function replacePropertyDescription(pBox,pRow, pDescription){
 	theTitle.removeChild(document.getElementById(pBox+'TitleWords'+pRow));
 	newChild    = theTitle.appendChild(document.createElement('p'));
 	newChild.setAttribute('id',pBox+'TitleWords'+pRow);
+	newChild.style.margin = '0px';
 	newChild.appendChild(document.createTextNode(pDescription));
 	
 }
@@ -1154,13 +1186,13 @@ function makeReportSection(pID){
 
    setStyle(newID, 'position', 'relative');
    setStyle(newID, 'overflow', 'hidden');
-   setStyle(newID, 'fontSize', '14');
-   setStyle(newID, 'borderWidth', '1');
+   setStyle(newID, 'fontSize', '14px');
+   setStyle(newID, 'borderWidth', '1px');
    setStyle(newID, 'borderStyle', 'solid');
    setStyle(newID, 'borderColor', 'lightgrey');
-   setStyle(newID, 'borderLeftWidth', '15');
+   setStyle(newID, 'borderLeftWidth', '15px');
    setStyle(newID, 'backgroundColor', '#ffffff');
-   setStyle(newID, 'height', '0');
+   setStyle(newID, 'height', '0px');
    setStyle(newID, 'width', document.getElementById('rproperty00').value);
 
 
@@ -1190,16 +1222,21 @@ function resize(){
 }
 
 function restoreBorder(pID){
-
-	setStyle(pID, 'borderStyle', 'solid')
-	setStyle(pID, 'borderWidth', getStyle(pID, 'widthwas'))
-	setStyle(pID, 'borderColor', getStyle(pID, 'colorwas'))
+	setStyle(pID, 'borderStyle', 'solid');
+	setStyle(pID, 'borderWidth', getStyle(pID, 'widthwas'));
+	setStyle(pID, 'borderColor', getStyle(pID, 'colorwas'));
+	var height = getStyle(pID,'height');
+	if(height == '0px'){
+		setStyle(pID,'borderBottomWidth','0px');
+		setStyle(pID,'borderLeftWidth','0px');
+		setStyle(pID,'borderRightWidth','0px');
+	}
 }
 
 
 function pageWidth(pThis){
 	for(i=0 ; i < reportSection.length ; i++){
-		document.getElementById(reportSection[i]).style.width = pThis.value;
+		document.getElementById(reportSection[i]).style.width = pThis.value + 'px';
 	}
 }
 
@@ -1340,7 +1377,7 @@ function replaceGroupValue(pArray){
 			newOption.appendChild(document.createTextNode(pArray[i]));
 		}
 	}
-	setStyle('object_value', 'width', '200')
+	setStyle('object_value', 'width', '200px')
   eval("newChild.onchange = update_group");
 
 	
@@ -1369,14 +1406,21 @@ function update_group(){
       theID = oList.options[i].value;
 	  if(oList.options[i].selected){
 			if(pValue=='0'){  moveToSection(theID, newValue);}                    //--Section
-			if(pValue=='1'){  setStyle(theID, "top", newValue);}                  //--Top                   
-			if(pValue=='2'){  setStyle(theID, "left", newValue);}                 //--Left                   
-			if(pValue=='3'){  setStyle(theID, "width", newValue);}                //--Width                   
-			if(pValue=='4'){  setStyle(theID, "height", newValue);}               //--Height                   
-			if(pValue=='5'){  setStyle(theID, "borderWidth", newValue);}          //--Border Width                   
+			if(pValue=='1'){  setStyle(theID, "top", reformatLength(newValue));}                  //--Top                   
+			if(pValue=='2'){  setStyle(theID, "left", reformatLength(newValue));}                 //--Left                   
+			if(pValue=='3'){  setStyle(theID, "width", reformatLength(newValue));}                //--Width                   
+			if(pValue=='4'){  setStyle(theID, "height", reformatLength(newValue));}               //--Height                   
+			if(pValue=='5'){//--Border Width
+				setStyle(theID, "borderWidth", reformatLength(newValue)); //was originally only this line
+				if(parseInt( getStyle(theID, "height") ) == 0){
+					setStyle(theID, "borderBottomWidth", "0px");
+					setStyle(theID, "borderTopWidth", "0px");
+					setStyle(theID, "borderRightWidth", "0px");
+				}
+			}
 			if(pValue=='6'){  setStyle(theID, "borderColor", newValue);}          //--Border Color                   
 			if(pValue=='7'){  setStyle(theID, "color", newValue);}                //--Color                   
-			if(pValue=='8'){  setStyle(theID, "fontSize", newValue);}             //--Font Size                   
+			if(pValue=='8'){  setStyle(theID, "fontSize", reformatLength(newValue));}             //--Font Size                   
 			if(pValue=='9'){  setStyle(theID, "fontWeight", newValue);}           //--Font Weight                   
 			if(pValue=='10'){ setStyle(theID, "fontFamily", newValue);}           //--Font Family
 			if(pValue=='11'){ setStyle(theID, "backgroundColor", newValue);}      //--Background Color                   
@@ -1403,7 +1447,7 @@ function group_left(pTimes){
 // REQUESTED BY -- Simon
 // The following code meant you could only move the group if you selected them in the dialog box.
 // Now they only need to be present in the list to be affected.
-		theobj.style.left = parseInt(theobj.style.left) + (pTimes * vBy);
+		theobj.style.left = parseInt(theobj.style.left) + (pTimes * vBy) + 'px';
 /*
 		if(oList.options[i].selected){
 			theobj.style.left = parseInt(theobj.style.left) + (pTimes * vBy);
@@ -1427,7 +1471,7 @@ function group_top(pTimes){
 // REQUESTED BY -- Simon
 // The following code meant you could only move the group if you selected them in the dialog box.
 // Now they only need to be present in the list to be affected.
-		theobj.style.top = parseInt(theobj.style.top) + (pTimes * vBy);
+		theobj.style.top = parseInt(theobj.style.top) + (pTimes * vBy) + 'px';
 /*
 		if(oList.options[i].selected){
 			theobj.style.top = parseInt(theobj.style.top) + (pTimes * vBy);
@@ -1549,118 +1593,44 @@ function autoHighlight(selectList){
 
 //added by nick
 function loadObjectProperties2(pThisID){
-
-	pID   = pThisID;
 	pThis = document.getElementById(pThisID);
-	if(document.getElementById('currentID').value!=''){
-		restoreBorder(document.getElementById('currentID').value);
-	}
-	document.getElementById('currentID').value = pID;
-	setStyle(pID, 'widthwas', getStyle(pID, 'borderLeftWidth'))
-	setStyle(pID, 'colorwas', getStyle(pID, 'borderLeftColor'))
-	setStyle(pID, 'borderWidth', '2');
-	setStyle(pID, 'borderColor', 'red');
-	setStyle(pID, 'borderStyle', 'dotted double');
-	replacePropertyDescription('object','00', 'Control Type');
-	replacePropertyDescription('object','01', 'Section');
-	replacePropertyDescription('object','02', 'Value')
-	replacePropertyDescription('object','03', 'Top');
-	replacePropertyDescription('object','04', 'Left');
-	replacePropertyDescription('object','05', 'Width');
-	replacePropertyDescription('object','06', 'Height');
-	replacePropertyDescription('object','07', 'Border Width');
-	replacePropertyDescription('object','08', 'Border Color');
-	if(pThis.tag == 'Graph'){
-		replacePropertyDescription('object','02', 'Parameters')
-		replacePropertyDescription('object','09', 'Graphic');
-		replacePropertyDescription('object','10', '');
-		replacePropertyDescription('object','11', '');
-		replacePropertyDescription('object','12', '');
-		replacePropertyDescription('object','13', '');
-		replacePropertyDescription('object','14', '');
-		replacePropertyDescription('object','15', '');
-		replacePropertyDescription('object','16', '');
-	}else{
-		replacePropertyDescription('object','09', 'Color');
-		replacePropertyDescription('object','10', 'Font Size');
-		replacePropertyDescription('object','11', 'Font Weight');
-		replacePropertyDescription('object','12', 'Font Family');
-		replacePropertyDescription('object','13', 'Background Color');
-		replacePropertyDescription('object','14', 'Text Align');
-		if(pThis.tag == 'Field'){replacePropertyDescription('object','15', 'Can Grow')};
-		if(pThis.tag == 'Field'){replacePropertyDescription('object','16', 'Format')};
-	}
-
-	replacePropertyValueSelect('object', '00', pThis.tag,                    true, theControl,    'setTag("'+pID+'", this.value)');
-	replacePropertyValueSelect('object', '01', pThis.parentNode.id,          true, reportSection, 'moveToSection("'+pID+'", this.value)');
-	replacePropertyValueInput('object', '02',  pThis.value,                  true,                'setValue("'+pID+'", this.value)')
-	replacePropertyValueInput('object', '03',  getStyle(pID, 'top'),         true,                'setStyle("'+pID+'", "top", this.value)');
-	replacePropertyValueInput('object', '04',  getStyle(pID, 'left'),        true,                'setStyle("'+pID+'", "left", this.value)');
-	replacePropertyValueInput('object', '05',  getStyle(pID, 'width'),       true,                'setStyle("'+pID+'", "width", this.value)');
-	replacePropertyValueInput('object', '06',  getStyle(pID, 'height'),      true,                'setStyle("'+pID+'", "height", this.value)');
-	replacePropertyValueInput('object', '07',  getStyle(pID, 'widthwas'),    true,                'setStyle("'+pID+'", "widthwas", this.value)');
-	replacePropertyValueInput('object', '08',  getStyle(pID, 'colorwas'),    true,                'setStyle("'+pID+'", "colorwas", this.value)');
-	if(pThis.tag == 'Graph'){
-		replacePropertyValueSelect('object', '09', getStyle(pID, 'graph'), true, theGraph, 'setStyle("'+pID+'", "graph", this.value)');
-		replacePropertyValueSelect('object', '10', getStyle(pID, 'graph'), false, theGraph, 'setStyle("'+pID+'", "graph", this.value)');
-		replacePropertyValueSelect('object', '11', getStyle(pID, 'graph'), false, theGraph, 'setStyle("'+pID+'", "graph", this.value)');
-		replacePropertyValueSelect('object', '12', getStyle(pID, 'graph'), false, theGraph, 'setStyle("'+pID+'", "graph", this.value)');
-		replacePropertyValueSelect('object', '13', getStyle(pID, 'graph'), false, theGraph, 'setStyle("'+pID+'", "graph", this.value)');
-		replacePropertyValueSelect('object', '14', getStyle(pID, 'graph'), false, theGraph, 'setStyle("'+pID+'", "graph", this.value)');
-		replacePropertyValueSelect('object', '15', getStyle(pID, 'graph'), false, theGraph, 'setStyle("'+pID+'", "graph", this.value)');
-		replacePropertyValueSelect('object', '16',  getStyle(pID, 'cangrow'),    false, theAnswer,'');	
-	}else{
-		replacePropertyValueInput('object', '09',  getStyle(pID, 'color'),           true,            'setStyle("'+pID+'", "color", this.value)');
-		replacePropertyValueInput('object', '10',  getStyle(pID, 'fontSize'),        true,            'setStyle("'+pID+'", "fontSize", this.value)');
-		replacePropertyValueSelect('object', '11', getStyle(pID, 'fontWeight'),      true, theWeight, 'setStyle("'+pID+'", "fontWeight", this.value)');
-		replacePropertyValueSelect('object', '12', getStyle(pID, 'fontFamily'),      true, theFamily, 'setStyle("'+pID+'", "fontFamily", this.value)');
-		replacePropertyValueInput('object',  '13', getStyle(pID, 'backgroundColor'), true,            'setStyle("'+pID+'", "backgroundColor", this.value)');
-		replacePropertyValueSelect('object', '14', getStyle(pID, 'textAlign'),       true, theAlign,  'setStyle("'+pID+'", "textAlign", this.value)');
-		if(pThis.tag == 'Field'){
-//alert(getStyle(pID, 'format')+'  -   '+formatNumber(getStyle(pID, 'format')));
-			replacePropertyValueSelect('object', '15',  getStyle(pID, 'cangrow'),    true, theAnswer, 'setStyle("'+pID+'", "cangrow", this.value)');	
-			replacePropertyValueSelect('object', '16',  theFormat[getStyle(pID, 'format')],     true, theFormat, 'setStyle("'+pID+'", "format", formatNumber(this.value))');	
-		}else{
-			replacePropertyValueSelect('object', '15',  getStyle(pID, 'cangrow'),    false, theAnswer,'');	
-			replacePropertyValueSelect('object', '16',  getStyle(pID, 'cangrow'),    false, theAnswer,'');	
-		}
-	}
+	loadObjectProperties(pThis);
 }
 
 </script>
 
 <body id='theBody'  onmouseup='mouseIsDown=false;idName=""' onmousemove='mouseMove(event)' onload='getStyle("objectProperties", "top");replace_object_value(0)' bgcolor='lightgrey' style='font-family:arial'>
 <form name='theForm'>
-<input type='hidden' name='currentID' id='currentID' value=''/>
-<input type='hidden' name='currentSectionID' id='currentSectionID' value=''/>
-<input type='hidden' name='deleteheaderID' id='deleteheaderID' value=''/>
-<input type='hidden' name='deletefooterID' id='deletefooterID' value=''/>
+<input type='hidden' name='currentID' id='currentID' value=''>
+<input type='hidden' name='currentSectionID' id='currentSectionID' value=''>
+<input type='hidden' name='deleteheaderID' id='deleteheaderID' value=''>
+<input type='hidden' name='deletefooterID' id='deletefooterID' value=''>
 <?php
 //-----------------------------php code-------------------------------------
 
 	$GLOBALS['controlType'] = array('100' => 'Label', '109' => 'Field', '103' => 'Graph', '118' => 'PageBreak','Label' => 'Label', 'Field' => 'Field', 'Graph' => 'Graph', 'PageBreak' => 'PageBreak');
-	print "<div id='newO' style='position:absolute;z-index:1;font-size:10;background-color:gray;top:0;left:20;height:14;width:90;color:white;text-align:center' onclick='newObject(100)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nNew Object</div>";
-	print "<div id='clone' style='position:absolute;z-index:1;font-size:10;background-color:gray;top:0;left:120;height:14;width:90;color:white;text-align:center' onclick='cloneObject()' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nClone Object</div>";
-	print "<div id='listO' style='position:absolute;z-index:1;font-size:10;background-color:gray;top:0;left:220;height:14;width:90;color:white;text-align:center' onclick='showDialogBox(7)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nSection Select</div>";
-	print "<div id='showG' style='position:absolute;z-index:1;font-size:10;background-color:gray;top:0;left:320;height:14;width:90;color:white;text-align:center' onclick='showDialogBox(6)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nGroup Change</div>";
-	print "<div id='newS'  style='position:absolute;z-index:1;font-size:10;background-color:gray;top:0;left:420;height:14;width:90;color:white;text-align:center' onclick='showDialogBox(4)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nSort Order</div>";
-	print "<div id='showO' style='position:absolute;z-index:1;font-size:10;background-color:gray;top:0;left:520;height:14;width:90;color:white;text-align:center' onclick='showDialogBox(1)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nObject Properties</div>";
-	print "<div id='showS' style='position:absolute;z-index:1;font-size:10;background-color:gray;top:0;left:620;height:14;width:90;color:white;text-align:center' onclick='showDialogBox(2)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nSection Properties</div>";
-	print "<div id='showR' style='position:absolute;z-index:1;font-size:10;background-color:gray;top:0;left:720;height:14;width:90;color:white;text-align:center' onclick='showDialogBox(3)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nReport Properties</div>";
-//	print "<div id='showC' style='position:absolute;font-size:10;background-color:gray;top:0;left:820;height:14;width:90;color:white;text-align:center' onclick='showDialogBox(5);buildClass();' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nReport Class</div>";
-	print "<div id='showC' style='position:absolute;z-index:1;font-size:10;background-color:gray;top:0;left:820;height:14;width:90;color:white;text-align:center' onclick='buildClass();' onmouseover='this.style.color=\"orange\"' title='Copy Changes to PHP Display Code' onmouseout='this.style.color=\"white\"' >\nCopy Changes</div>";
+	print "<div id='newO' style='position:absolute;z-index:1;font-size:10px;background-color:gray;top:0px;left:20px;height:14px;width:90px;color:white;text-align:center' onclick='newObject(100)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nNew Object</div>";
+	print "<div id='clone' style='position:absolute;z-index:1;font-size:10px;background-color:gray;top:0px;left:120px;height:14px;width:90px;color:white;text-align:center' onclick='cloneObject()' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nClone Object</div>";
+	print "<div id='listO' style='position:absolute;z-index:1;font-size:10px;background-color:gray;top:0px;left:220px;height:14px;width:90px;color:white;text-align:center' onclick='showDialogBox(7)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nSection Select</div>";
+	print "<div id='showG' style='position:absolute;z-index:1;font-size:10px;background-color:gray;top:0px;left:320px;height:14px;width:90px;color:white;text-align:center' onclick='showDialogBox(6)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nGroup Change</div>";
+	print "<div id='newS'  style='position:absolute;z-index:1;font-size:10px;background-color:gray;top:0px;left:420px;height:14px;width:90px;color:white;text-align:center' onclick='showDialogBox(4)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nSort Order</div>";
+	print "<div id='showO' style='position:absolute;z-index:1;font-size:10px;background-color:gray;top:0px;left:520px;height:14px;width:90px;color:white;text-align:center' onclick='showDialogBox(1)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nObject Properties</div>";
+	print "<div id='showS' style='position:absolute;z-index:1;font-size:10px;background-color:gray;top:0px;left:620px;height:14px;width:90px;color:white;text-align:center' onclick='showDialogBox(2)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nSection Properties</div>";
+	print "<div id='showR' style='position:absolute;z-index:1;font-size:10px;background-color:gray;top:0px;left:720px;height:14px;width:90px;color:white;text-align:center' onclick='showDialogBox(3)' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nReport Properties</div>";
+//	print "<div id='showC' style='position:absolute;font-size:10px;background-color:gray;top:0px;left:820px;height:14px;width:90px;color:white;text-align:center' onclick='showDialogBox(5);buildClass();' onmouseover='this.style.color=\"orange\"' onmouseout='this.style.color=\"white\"' >\nReport Class</div>";
+	print "<div id='showC' style='position:absolute;z-index:1;font-size:10px;background-color:gray;top:0px;left:820px;height:14px;width:90px;color:white;text-align:center' onclick='buildClass();' onmouseover='this.style.color=\"orange\"' title='Copy Changes to PHP Display Code' onmouseout='this.style.color=\"white\"' >\nCopy Changes</div>";
 
 //-----object box
-	print "<div id='objectProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14;border-width:1;border-style:solid;border-color:black;background-color: #999999;top:200;left:200;height:520;width:450' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
-	print "<div id='objectTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14;color:white;background-color:black;top:0;left:0;height:18;width:20' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='this.parentNode.style.visibility = \"hidden\"'><b>X</b></div>\n";
-	print "<div id='objectTitleBar'   class='theHeader'           style='top:0;left:16;width:3000;height:18'>Object Properties</div>\n";
-	print "<div id='objectTitleDelete' class='theHeader'           style='color:yellow;top:0;left:328;' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"yellow\"' onclick='deleteObject()'>Delete This Object</div>\n";
+	print "<div id='objectProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14px;border-width:1px;border-style:solid;border-color:black;background-color: #999999;top:200px;left:200px;height:520px;width:450px' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
+	print "<div id='objectTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14px;color:white;background-color:black;top:0px;left:0px;height:18px;width:20px' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='this.parentNode.style.visibility = \"hidden\"'><b>X</b></div>\n";
+	print "<div id='objectTitleBar'   class='theHeader'           style='top:0px;left:16px;width:3000px;height:18px'>Object Properties</div>\n";
+	print "<div id='objectTitleDelete' class='theHeader'           style='color:yellow;top:0px;left:328px;' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"yellow\"' onclick='deleteObject()'>Delete This Object</div>\n";
 
 	for($i = 0 ; $i < 17 ; $i++){
 		$suf = substr("0$i", -2);
 		$theTop = 25*(1+$i);
-		print "   <div id='objectTitle$suf'    class='thePropertyLeft'     style='top:$theTop;'><p id='objectTitleWords$suf'></p></div>\n";
-		print "   <div id='objectValue$suf'    class='thePropertyRight'    style='top:$theTop;'><input id='objectProperty$suf' value='' style='width:200' onchange='updateValue(this.id)'/></div>\n";
+		print "   <div id='objectTitle$suf'    class='thePropertyLeft'     style='top:$theTop"."px;'><p id='objectTitleWords$suf' style='margin: 0px;'></p></div>\n";
+		print "   <div id='objectValue$suf'    class='thePropertyRight'    style='top:$theTop"."px;'><input id='objectProperty$suf' value='' style='width:200px' onchange='updateValue(this.id)'></div>\n";
 
 
 
@@ -1670,16 +1640,16 @@ function loadObjectProperties2(pThisID){
 	print "</div>\n";
 
 //-----section box
-	print "<div id='sectionProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14;border-width:1;border-style:solid;border-color:black;background-color: gray;top:200;left:200;height:350;width:450' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
-	print "<div id='sectionTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14;color:white;background-color:black;top:0;left:0;height:18;width:20' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='hideSectionBox(this)'><b>X</b></div>\n";
-	print "<div id='sectionTitleBar'   class='theHeader'           style='top:0;left:16;width:3000;height:18'>Section Properties</div>\n";
-	print "<div id='sectionTitleDelete' class='theHeader'          style='color:yellow;top:0;left:275;' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"yellow\"' onclick='deleteSection()'>Delete This Section Group</div>\n";
+	print "<div id='sectionProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14px;border-width:1px;border-style:solid;border-color:black;background-color: gray;top:200px;left:200px;height:350px;width:450px' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
+	print "<div id='sectionTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14px;color:white;background-color:black;top:0px;left:0px;height:18px;width:20px' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='hideSectionBox(this)'><b>X</b></div>\n";
+	print "<div id='sectionTitleBar'   class='theHeader'           style='top:0px;left:16px;width:3000px;height:18px'>Section Properties</div>\n";
+	print "<div id='sectionTitleDelete' class='theHeader'          style='color:yellow;top:0px;left:275px;' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"yellow\"' onclick='deleteSection()'>Delete This Section Group</div>\n";
 
 	for($i = 0 ; $i < 12 ; $i++){
 		$suf = substr("0$i", -2);
 		$theTop = 25*(1+$i);
-		print "   <div id='sectionTitle$suf'    class='thePropertyLeft'     style='top:$theTop;'><p id='sectionTitleWords$suf'></p></div>\n";
-		print "   <div id='sectionValue$suf'    class='thePropertyRight'    style='top:$theTop;'><input id='sectionProperty$suf' value='' style='visibility:hidden;width:200'/></div>\n";
+		print "   <div id='sectionTitle$suf'    class='thePropertyLeft'     style='top:$theTop"."px;'><p id='sectionTitleWords$suf' style='margin: 0px;'></p></div>\n";
+		print "   <div id='sectionValue$suf'    class='thePropertyRight'    style='top:$theTop"."px;'><input id='sectionProperty$suf' value='' style='visibility:hidden;width:200px'></div>\n";
 	}
 	
 	print "</div>\n";
@@ -1689,30 +1659,30 @@ function loadObjectProperties2(pThisID){
 
 
 //-----class box
-	print "<div id='classProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14;border-width:1;border-style:solid;border-color:black;background-color:#666666;top:200;left:200;height:500;width:600' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
-	print "<div id='classTitleClose'   class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14;color:white;background-color:black;top:0;left:0;height:18;width:20' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='this.parentNode.style.visibility = \"hidden\"'><b>X</b></div>\n";
-	print "<div id='classTitleBar'     class='theHeader'           style='top:0;left:16;width:3000;height:18'>Report Class</div>\n";
-	print "   <div id='classTitleCopy' class='theHeader'           style='color:yellow;top:0;left:490;' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"yellow\"' onclick='copyClass()'>Copy To Report</div>\n";
-	print "   <div id='classTitle00'   class='thePropertyLeft'     style='top:25;'><p id='classTitleWords00'><textarea rows='28' cols='70' name='classcode' id='classcode' onfocus='emptyID()' ></textarea></p></div>\n";
+	print "<div id='classProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14px;border-width:1px;border-style:solid;border-color:black;background-color:#666666;top:200px;left:200px;height:500px;width:600px' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
+	print "<div id='classTitleClose'   class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14px;color:white;background-color:black;top:0px;left:0px;height:18px;width:20px' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='this.parentNode.style.visibility = \"hidden\"'><b>X</b></div>\n";
+	print "<div id='classTitleBar'     class='theHeader'           style='top:0px;left:16px;width:3000px;height:18px'>Report Class</div>\n";
+	print "   <div id='classTitleCopy' class='theHeader'           style='color:yellow;top:0px;left:490px;' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"yellow\"' onclick='copyClass()'>Copy To Report</div>\n";
+	print "   <div id='classTitle00'   class='thePropertyLeft'     style='top:25px;'><p id='classTitleWords00' style='margin: 0px;'><textarea rows='28' cols='70' name='classcode' id='classcode' onfocus='emptyID()' ></textarea></p></div>\n";
 	print "</div>\n";
 
 
 //-----report box
-	print "<div id='reportProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14;border-width:1;border-style:solid;border-color:black;background-color:#666666;top:200;left:200;height:150;width:300' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
-	print "<div id='reportTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14;color:white;background-color:black;top:0;left:0;height:18;width:20' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='this.parentNode.style.visibility = \"hidden\"'><b>X</b></div>\n";
-	print "<div id='reportTitleBar'   class='theHeader'           style='top:0;left:16;width:3000;height:18'>Report Properties</div>\n";
+	print "<div id='reportProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14px;border-width:1px;border-style:solid;border-color:black;background-color:#666666;top:200px;left:200px;height:150px;width:300px' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
+	print "<div id='reportTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14px;color:white;background-color:black;top:0px;left:0px;height:18px;width:20px' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='this.parentNode.style.visibility = \"hidden\"'><b>X</b></div>\n";
+	print "<div id='reportTitleBar'   class='theHeader'           style='top:0px;left:16px;width:3000px;height:18px'>Report Properties</div>\n";
 
-	print "   <div id='reportTitle00'    class='thePropertyLeft'     style='top:25;'><p id='reportTitleWords00'>Width</p></div>\n";
-	print "   <div id='reportValue00'    class='thePropertyRight'    style='top:25;'><input id='rproperty00' value='$theLayout->Width' style='width:50' onfocus='emptyID()' onchange='pageWidth(this)'/></div>\n";
+	print "   <div id='reportTitle00'    class='thePropertyLeft'     style='top:25px;'><p id='reportTitleWords00' style='margin: 0px;'>Width</p></div>\n";
+	print "   <div id='reportValue00'    class='thePropertyRight'    style='top:25px;'><input id='rproperty00' value='$theLayout->Width' style='width:50px' onfocus='emptyID()' onchange='pageWidth(this)'></div>\n";
 	
-	print "   <div id='reportTitle01'    class='thePropertyLeft'     style='top:50;'><p id='reportTitleWords01'>Height</p></div>\n";
-	print "   <div id='reportValue01'    class='thePropertyRight'    style='top:50;'><input id='rproperty01' value='$theLayout->Height' style='width:50' onfocus='emptyID()' /></div>\n";
+	print "   <div id='reportTitle01'    class='thePropertyLeft'     style='top:50px;'><p id='reportTitleWords01' style='margin: 0px;'>Height</p></div>\n";
+	print "   <div id='reportValue01'    class='thePropertyRight'    style='top:50px;'><input id='rproperty01' value='$theLayout->Height' style='width:50px' onfocus='emptyID()' ></div>\n";
 	
-	print "   <div id='reportTitle02'    class='thePropertyLeft'     style='top:75;'><p id='reportTitleWords02'>Paper Type</p></div>\n";
-	print "   <div id='reportValue02'    class='thePropertyRight'    style='top:75;'><input id='rproperty02' value='$theLayout->PaperType' style='width:90' onfocus='emptyID()' onchange='pageWidth(this)'/></div>\n";
+	print "   <div id='reportTitle02'    class='thePropertyLeft'     style='top:75px;'><p id='reportTitleWords02' style='margin: 0px;'>Paper Type</p></div>\n";
+	print "   <div id='reportValue02'    class='thePropertyRight'    style='top:75px;'><input id='rproperty02' value='$theLayout->PaperType' style='width:90px' onfocus='emptyID()' onchange='pageWidth(this)'></div>\n";
 	
-	print "   <div id='reportTitle03'    class='thePropertyLeft'     style='top:100;'><p id='reportTitleWords03'>Orientation</p></div>\n";
-	print "   <div id='reportValue03'    class='thePropertyRight'    style='top:100;'><input id='rproperty03' value='$theLayout->Orientation' onchange='var bob = \"lLpP\"; if(bob.indexOf(this.value) == -1){alert(\"Must be P or L\");this.value= \"\";}' style='width:15' onfocus='emptyID()' /></div>\n";
+	print "   <div id='reportTitle03'    class='thePropertyLeft'     style='top:100px;'><p id='reportTitleWords03' style='margin: 0px;'>Orientation</p></div>\n";
+	print "   <div id='reportValue03'    class='thePropertyRight'    style='top:100px;'><input id='rproperty03' value='$theLayout->Orientation' onchange='var bob = \"lLpP\"; if(bob.indexOf(this.value) == -1){alert(\"Must be P or L\");this.value= \"\";}' style='width:15px' onfocus='emptyID()' ></div>\n";
 	
 	print "</div>\n";
 
@@ -1720,33 +1690,33 @@ function loadObjectProperties2(pThisID){
 
 
 //-----sortorder box
-	print "<div id='sortorderProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14;border-width:1;border-style:solid;border-color:black;background-color:#666666;top:200;left:200;height:250;width:450' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
-	print "<div id='sortorderTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14;color:white;background-color:black;top:0;left:0;height:18;width:20' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='this.parentNode.style.visibility = \"hidden\"'><b>X</b></div>\n";
-	print "<div id='sortorderTitleBar'   class='theHeader'           style='top:0;left:16;width:3000;height:18'>Sort Order</div>\n";
-	print "   <div id='sortorderValue00'    class='thesortorderLeft'    style='top:25;'><input name='property00' id='property00' value='" . $theLayout->Groups[0]->Field . "' style='width:150' onfocus='isLastEmpty(this);' onblur='alterSections(this)'/></div>\n";
+	print "<div id='sortorderProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14px;border-width:1px;border-style:solid;border-color:black;background-color:#666666;top:200px;left:200px;height:250px;width:450px' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>\n";
+	print "<div id='sortorderTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14px;color:white;background-color:black;top:0px;left:0px;height:18px;width:20px' onmouseover='this.style.color=\"red\"' onmouseout='this.style.color=\"white\"' onclick='this.parentNode.style.visibility = \"hidden\"'><b>X</b></div>\n";
+	print "<div id='sortorderTitleBar'   class='theHeader'           style='top:0px;left:16px;width:3000px;height:18px'>Sort Order</div>\n";
+	print "   <div id='sortorderValue00'    class='thesortorderLeft'    style='top:25px;'><input name='property00' id='property00' value='" . $theLayout->Groups[0]->Field . "' style='width:150px' onfocus='isLastEmpty(this);' onblur='alterSections(this)'></div>\n";
 	if($theLayout->Groups[0]->SortOrder==''){$asc='selected';$desc='';}else{$asc='';$desc='selected';}
-	print "   <div id='sortorderSelect00'   class='thesortorderRight'   style='top:25;'><select  id='sort00' class='objects' style='width:100'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
-	print "   <div id='sortorderValue01'    class='thesortorderLeft'    style='top:50;'><input name='property01' id='property01' value='" . $theLayout->Groups[1]->Field . "' style='width:150' onfocus='isLastEmpty(this);' onblur='alterSections(this)'/> <input name='moveup1' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' /></div>\n";
+	print "   <div id='sortorderSelect00'   class='thesortorderRight'   style='top:25px;'><select  id='sort00' class='objects' style='width:100px'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
+	print "   <div id='sortorderValue01'    class='thesortorderLeft'    style='top:50px;'><input name='property01' id='property01' value='" . $theLayout->Groups[1]->Field . "' style='width:150px' onfocus='isLastEmpty(this);' onblur='alterSections(this)'> <input name='moveup1' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' ></div>\n";
 	if($theLayout->Groups[1]->SortOrder==''){$asc='selected';$desc='';}else{$asc='';$desc='selected';}
-	print "   <div id='sortorderSelect01'   class='thesortorderRight'   style='top:50;'><select  id='sort01' class='objects' style='width:100'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
-	print "   <div id='sortorderValue02'    class='thesortorderLeft'    style='top:75;'><input name='property02' id='property02' value='" . $theLayout->Groups[2]->Field . "' style='width:150' onfocus='isLastEmpty(this);' onblur='alterSections(this)'/> <input name='moveup2' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' /></div>\n";
+	print "   <div id='sortorderSelect01'   class='thesortorderRight'   style='top:50px;'><select  id='sort01' class='objects' style='width:100px'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
+	print "   <div id='sortorderValue02'    class='thesortorderLeft'    style='top:75px;'><input name='property02' id='property02' value='" . $theLayout->Groups[2]->Field . "' style='width:150px' onfocus='isLastEmpty(this);' onblur='alterSections(this)'> <input name='moveup2' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' ></div>\n";
 	if($theLayout->Groups[2]->SortOrder==''){$asc='selected';$desc='';}else{$asc='';$desc='selected';}
-	print "   <div id='sortorderSelect02'   class='thesortorderRight'   style='top:75;'><select  id='sort02' class='objects' style='width:100'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
-	print "   <div id='sortorderValue03'    class='thesortorderLeft'    style='top:100;'><input name='property03' id='property03' value='" . $theLayout->Groups[3]->Field . "' style='width:150' onfocus='isLastEmpty(this);' onblur='alterSections(this)'/> <input name='moveup3' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' /></div>\n";
+	print "   <div id='sortorderSelect02'   class='thesortorderRight'   style='top:75px;'><select  id='sort02' class='objects' style='width:100px'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
+	print "   <div id='sortorderValue03'    class='thesortorderLeft'    style='top:100px;'><input name='property03' id='property03' value='" . $theLayout->Groups[3]->Field . "' style='width:150px' onfocus='isLastEmpty(this);' onblur='alterSections(this)'> <input name='moveup3' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' ></div>\n";
 	if($theLayout->Groups[3]->SortOrder==''){$asc='selected';$desc='';}else{$asc='';$desc='selected';}
-	print "   <div id='sortorderSelect03'   class='thesortorderRight'   style='top:100;'><select  id='sort03' class='objects' style='width:100'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
-	print "   <div id='sortorderValue04'    class='thesortorderLeft'    style='top:125;'><input name='property04' id='property04' value='" . $theLayout->Groups[4]->Field . "' style='width:150' onfocus='isLastEmpty(this);' onblur='alterSections(this)'/> <input name='moveup4' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' /></div>\n";
+	print "   <div id='sortorderSelect03'   class='thesortorderRight'   style='top:100px;'><select  id='sort03' class='objects' style='width:100px'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
+	print "   <div id='sortorderValue04'    class='thesortorderLeft'    style='top:125px;'><input name='property04' id='property04' value='" . $theLayout->Groups[4]->Field . "' style='width:150px' onfocus='isLastEmpty(this);' onblur='alterSections(this)'> <input name='moveup4' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' ></div>\n";
 	if($theLayout->Groups[4]->SortOrder==''){$asc='selected';$desc='';}else{$asc='';$desc='selected';}
-	print "   <div id='sortorderSelect04'   class='thesortorderRight'   style='top:125;'><select  id='sort04' class='objects' style='width:100'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
-	print "   <div id='sortorderValue05'    class='thesortorderLeft'    style='top:150;'><input name='property05' id='property05' value='" . $theLayout->Groups[5]->Field . "' style='width:150' onfocus='isLastEmpty(this);' onblur='alterSections(this)'/> <input name='moveup5' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' /></div>\n";
+	print "   <div id='sortorderSelect04'   class='thesortorderRight'   style='top:125px;'><select  id='sort04' class='objects' style='width:100px'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
+	print "   <div id='sortorderValue05'    class='thesortorderLeft'    style='top:150px;'><input name='property05' id='property05' value='" . $theLayout->Groups[5]->Field . "' style='width:150px' onfocus='isLastEmpty(this);' onblur='alterSections(this)'> <input name='moveup5' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' ></div>\n";
 	if($theLayout->Groups[5]->SortOrder==''){$asc='selected';$desc='';}else{$asc='';$desc='selected';}
-	print "   <div id='sortorderSelect05'   class='thesortorderRight'   style='top:150;'><select  id='sort05' class='objects' style='width:100'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
-	print "   <div id='sortorderValue06'    class='thesortorderLeft'    style='top:175;'><input name='property06' id='property06' value='" . $theLayout->Groups[6]->Field . "' style='width:150' onfocus='isLastEmpty(this);' onblur='alterSections(this)'/> <input name='moveup6' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' /></div>\n";
+	print "   <div id='sortorderSelect05'   class='thesortorderRight'   style='top:150px;'><select  id='sort05' class='objects' style='width:100px'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
+	print "   <div id='sortorderValue06'    class='thesortorderLeft'    style='top:175px;'><input name='property06' id='property06' value='" . $theLayout->Groups[6]->Field . "' style='width:150px' onfocus='isLastEmpty(this);' onblur='alterSections(this)'> <input name='moveup6' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' ></div>\n";
 	if($theLayout->Groups[6]->SortOrder==''){$asc='selected';$desc='';}else{$asc='';$desc='selected';}
-	print "   <div id='sortorderSelect06'   class='thesortorderRight'   style='top:175;'><select  id='sort06' class='objects' style='width:100'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
-	print "   <div id='sortorderValue07'    class='thesortorderLeft'    style='top:200;'><input name='property07' id='property07' value='" . $theLayout->Groups[7]->Field . "' style='width:150' onfocus='isLastEmpty(this);' onblur='alterSections(this)'/> <input name='moveup7' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' /></div>\n";
+	print "   <div id='sortorderSelect06'   class='thesortorderRight'   style='top:175px;'><select  id='sort06' class='objects' style='width:100px'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
+	print "   <div id='sortorderValue07'    class='thesortorderLeft'    style='top:200px;'><input name='property07' id='property07' value='" . $theLayout->Groups[7]->Field . "' style='width:150px' onfocus='isLastEmpty(this);' onblur='alterSections(this)'> <input name='moveup7' type='button' class='moveup' value='Move Up' onmousedown='nodrag()' onclick='moveSectionUp(this)' ></div>\n";
 	if($theLayout->Groups[7]->SortOrder==''){$asc='selected';$desc='';}else{$asc='';$desc='selected';}
-	print "   <div id='sortorderSelect07'   class='thesortorderRight'   style='top:200;'><select  id='sort07' class='objects' style='width:100'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
+	print "   <div id='sortorderSelect07'   class='thesortorderRight'   style='top:200px;'><select  id='sort07' class='objects' style='width:100px'><option $asc value=''>Ascending</option><option $desc value='DESC'>Descending</option></select></div>\n";
 	
 	print "</div>\n";
 
@@ -1754,48 +1724,48 @@ function loadObjectProperties2(pThisID){
 
 ?>
 
-<div id='listObjects' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14;border-width:1;border-style:solid;border-color:black;background-color: gray;top:100;left:100;height:450;width:450' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>
-	<div id='listTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14;color:white;background-color:black;top:0;left:0;height:18;width:20' onmouseover='this.style.color="red"' onmouseout='this.style.color="white"' onclick='hideGroupBox(this)'><b>X</b></div>
-	<div id='listTitleBar'   class='theHeader'           style='top:0;left:16;width:3000;height:18'>List the Objects in Selected Section</div>
+<div id='listObjects' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14px;border-width:1px;border-style:solid;border-color:black;background-color: gray;top:100px;left:100px;height:450px;width:450px' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>
+	<div id='listTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14px;color:white;background-color:black;top:0px;left:0px;height:18px;width:20px' onmouseover='this.style.color="red"' onmouseout='this.style.color="white"' onclick='hideGroupBox(this)'><b>X</b></div>
+	<div id='listTitleBar'   class='theHeader'           style='top:0px;left:16px;width:3000px;height:18px'>List the Objects in Selected Section</div>
 
 
-	<div id='listTitle00'    class='thePropertyLeft'     style='top:40;'>Object List</div>
+	<div id='listTitle00'    class='thePropertyLeft'     style='top:40px;'>Object List</div>
 	
 	
-	<div id='listValue00'    class='thePropertyRight'    style='top:60;left:20;'>
-		<select name="list_ids" id="list_ids" class="objects"  multiple size='14' onscroll="mouseUpId(event,'listObjects')" onchange="autoHighlight(this)" ondblclick="removeFromObjectList()" style="width:400;postition:absolute">
+	<div id='listValue00'    class='thePropertyRight'    style='top:60px;left:20px;'>
+		<select name="list_ids" id="list_ids" class="objects"  multiple size='14' onscroll="mouseUpId(event,'listObjects')" onchange="autoHighlight(this)" ondblclick="removeFromObjectList()" style="width:400px;postition:absolute">
 		</select>
 	</div>
 
-	<div id='listValue01'    class='thePropertyRight'    style='text-align:center;width:200;height:20;top:350;left:10;'>
-		<input type='button' id='highlight_list' value='Highlight Selected Object' onclick='highlightSelected("list_ids")' style='width:200'/><BR/>
+	<div id='listValue01'    class='thePropertyRight'    style='text-align:center;width:200px;height:20px;top:350px;left:10px;'>
+		<input type='button' id='highlight_list' value='Highlight Selected Object' onclick='highlightSelected("list_ids")' style='width:200px'><br>
 	</div>
 	
-	<div id='listValue02'    class='thePropertyRight'    style='text-align:center;width:200;height:20;top:350;left:210;'>
-		<input type='button' id='to_group' value='Send to Group Editor' onclick='toGroupEditor()' style='width:200'/><BR/>
+	<div id='listValue02'    class='thePropertyRight'    style='text-align:center;width:200px;height:20px;top:350px;left:210px;'>
+		<input type='button' id='to_group' value='Send to Group Editor' onclick='toGroupEditor()' style='width:200px'><br>
 	</div>
 
-	<div id='listValue03'    class='thePropertyRight'    style='text-align:center;width:200;height:20;top:380;left:10;'>
-		<input type='button' id='highlight_list' value='Select All' onclick='selectAllInSectionSelect()' style='width:200'/><BR/>
+	<div id='listValue03'    class='thePropertyRight'    style='text-align:center;width:200px;height:20px;top:380px;left:10px;'>
+		<input type='button' id='highlight_list' value='Select All' onclick='selectAllInSectionSelect()' style='width:200px'><br>
 	</div>
 	
-	<div id='listValue04'    class='thePropertyRight'    style='text-align:center;width:200;height:20;top:380;left:210;'>
-		<input type='button' id='to_group' value='Deselect Selected' onclick='deselectSelectedInSectionSelect()' style='width:200'/><BR/>
+	<div id='listValue04'    class='thePropertyRight'    style='text-align:center;width:200px;height:20px;top:380px;left:210px;'>
+		<input type='button' id='to_group' value='Deselect Selected' onclick='deselectSelectedInSectionSelect()' style='width:200px'><br>
 	</div>
 	
-	<div id='listValue05'    class='thePropertyRight'    style='text-align:center;width:200;height:20;top:410;left:10;'>
-		<input type='button' id='highlight_list' value='Delete Selected' onclick='deleteSelected()' style='width:200'/><BR/>
+	<div id='listValue05'    class='thePropertyRight'    style='text-align:center;width:200px;height:20px;top:410px;left:10px;'>
+		<input type='button' id='highlight_list' value='Delete Selected' onclick='deleteSelected()' style='width:200px'><br>
 	</div>
 </div>
 	
-<div id='groupProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14;border-width:1;border-style:solid;border-color:black;background-color: gray;top:200;left:200;height:450;width:450' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>
-   <div id='groupTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14;color:white;background-color:black;top:0;left:0;height:18;width:20' onmouseover='this.style.color="red"' onmouseout='this.style.color="white"' onclick='hideGroupBox(this)'><b>X</b></div>
-   <div id='groupTitleBar'   class='theHeader'           style='top:0;left:16;width:3000;height:18'>Change A Group of Objects Properties</div>
-   <div id='groupTitle00'    class='thePropertyLeft'     style='top:25;'>Object Property</div>
+<div id='groupProperties' style='visibility:hidden;overflow:hidden;position:absolute;z-index:1;font-size:14px;border-width:1px;border-style:solid;border-color:black;background-color: gray;top:200px;left:200px;height:450px;width:450px' onmousedown='mouseDown(event,this)' onmouseup='mouseUp(event,this)' onkeydown='shiftIsDown=true' onkeyup='shiftIsDown=false'>
+   <div id='groupTitleClose' class='theHeader'           style='cursor:default;overflow:hidden;position:absolute;font-size:14px;color:white;background-color:black;top:0px;left:0px;height:18px;width:20px' onmouseover='this.style.color="red"' onmouseout='this.style.color="white"' onclick='hideGroupBox(this)'><b>X</b></div>
+   <div id='groupTitleBar'   class='theHeader'           style='top:0px;left:16px;width:3000px;height:18px'>Change A Group of Objects Properties</div>
+   <div id='groupTitle00'    class='thePropertyLeft'     style='top:25px;'>Object Property</div>
 
-      <div id='groupValue00'    class='thePropertyRight'    style='top:25;'>
+      <div id='groupValue00'    class='thePropertyRight'    style='top:25px;'>
 
-         <select name="object_property" id="object_property" onchange='replace_object_value(this.value)' class="objects" style="width:200">
+         <select name="object_property" id="object_property" onchange='replace_object_value(this.value)' class="objects" style="width:200px">
          <option value='0'>Section</option'>
          <option value='1'>Top</option'>
          <option value='2'>Left</option'>
@@ -1815,36 +1785,36 @@ function loadObjectProperties2(pThisID){
 
       </div>
 
-      <div id='groupTitle01'    class='thePropertyLeft'     style='top:60;'>Object List
-      	 <br/><br/><br/>
-         <br/><input accesskey='a' id='object_add'    type='button' value='Add object' onclick="addToList()" style='width:150'/>
-         <br/><input accesskey='e' id='object_remove' type='button' value='rEmove object' onclick="removeFromList()" style='width:150'/>
-         <br/><input id='object_clear' type='button' value='clear list' onclick="clearList()" style='width:150'/>
-         <br/><input id='object_sort' type='button' value='sort by position' onclick="sortListByPosition('object_ids')" style='width:150'/>
+      <div id='groupTitle01'    class='thePropertyLeft'     style='top:60px;'>Object List
+      	 <br><br><br>
+         <br><input accesskey='a' id='object_add'    type='button' value='Add object' onclick="addToList()" style='width:150px'>
+         <br><input accesskey='e' id='object_remove' type='button' value='rEmove object' onclick="removeFromList()" style='width:150px'>
+         <br><input id='object_clear' type='button' value='clear list' onclick="clearList()" style='width:150px'>
+         <br><input id='object_sort' type='button' value='sort by position' onclick="sortListByPosition('object_ids')" style='width:150px'>
       	
       </div>
 
 
-      <div id='groupValue01'    class='thePropertyRight'    style='top:60;'>
+      <div id='groupValue01'    class='thePropertyRight'    style='top:60px;'>
 
 
-         <select name="object_ids" id="object_ids" class="objects"  multiple size='14' onscroll="mouseUpId(event,'groupProperties')" onchange="autoHighlight(this)" ondblclick="removeFromList()" style="width:160;width:200">
+         <select name="object_ids" id="object_ids" class="objects"  multiple size='14' onscroll="mouseUpId(event,'groupProperties')" onchange="autoHighlight(this)" ondblclick="removeFromList()" style="width:160px;width:200px">
          </select>
 
       </div>
 
-      <div id='groupTitle03'    class='thePropertyLeft'     style='top:300;'>New Value</div>
-      <div id='groupValue03'    class='thePropertyRight'    style='top:300;'>
+      <div id='groupTitle03'    class='thePropertyLeft'     style='top:300px;'>New Value</div>
+      <div id='groupValue03'    class='thePropertyRight'    style='top:300px;'>
 
 
-         <input id='object_value' value='' style='width:200'/>
+         <input id='object_value' value='' style='width:200px'>
 
       </div>
 
-      <div id='groupTitle03'    class='thePropertyLeft'     style='top:350;'><br/>move 
+      <div id='groupTitle03'    class='thePropertyLeft'     style='top:350px;'><br>move 
       	
 
-         <select name="pixel_move" accesskey='p' id="pixel_move" class="objects" style="width:60">
+         <select name="pixel_move" accesskey='p' id="pixel_move" class="objects" style="width:60px">
          <option value='1'>1</option'>
          <option value='5'>5</option'>
          <option value='10'>10</option'>
@@ -1857,13 +1827,13 @@ function loadObjectProperties2(pThisID){
 
       	
       </div>
-      <div id='groupValue03'    class='thePropertyRight'    style='text-align:center;width:200;top:350;'>
+      <div id='groupValue03'    class='thePropertyRight'    style='text-align:center;width:200px;top:350px;'>
 
 
-         <input type='button' accesskey='u' id='move_up' value='Up' onclick='group_top(-1)' style='width:50'/><BR/>
-         <input type='button' accesskey='l' id='move_left' value='Left' onclick='group_left(-1)' style='width:50'/>
-         <input type='button' accesskey='r'  id='move_right' value='Right' onclick='group_left(1)' style='width:50'/><BR/>
-         <input type='button' accesskey='o'  id='move_down' value='dOwn' onclick='group_top(1)' style='width:50'/>
+         <input type='button' accesskey='u' id='move_up' value='Up' onclick='group_top(-1)' style='width:50px'><br>
+         <input type='button' accesskey='l' id='move_left' value='Left' onclick='group_left(-1)' style='width:50px'>
+         <input type='button' accesskey='r'  id='move_right' value='Right' onclick='group_left(1)' style='width:50px'><br>
+         <input type='button' accesskey='o'  id='move_down' value='dOwn' onclick='group_top(1)' style='width:50px'>
 
       </div>
 
@@ -2054,15 +2024,15 @@ class buildSection{
 		}else{
 			$border              = 'black';
 		}
-		$s  =      "\n\n<div id='$this->name' tag='$this->tag' style='visibility:$this->visible;position:relative;overflow:hidden;font-size:14;";
-		$s  = $s . "border-width:1;border-style:solid;border-color:$border;border-left-width:15;";
+		$s  =      "\n\n<div id='$this->name' tag='$this->tag' style='visibility:$this->visible;position:relative;overflow:hidden;font-size:14px;";
+		$s  = $s . "border-width:1px;border-style:solid;border-color:$border;border-left-width:15px;";
 		if($this->back_ground_color=='' or $this->back_ground_color=='white' or $this->back_ground_color=='ffffff' or $this->back_ground_color=='#ffffff'){
 			$s  = $s . "background-color: #ebebeb;";
 		}else{
 			$s  = $s . "background-color: $this->back_ground_color;";
 		}
-		$s  = $s . "height          : $this->height;";
-		$s  = $s . "width           : " . $this->layout->Width . ";'";
+		$s  = $s . "height          : ".parseInt($this->height)."px;";
+		$s  = $s . "width           : " .parseInt($this->layout->Width). "px;'";
 		$s  = $s . "onclick         = 'loadSectionProperties(this); selectSectionObjects();' ";
 		$s  = $s . "onchange        = 'loadSectionProperties(this); selectSectionObjects();' ";
 		$s  = $s . "><div id='text_$this->name'>$this->name</div>\n\n";
@@ -2076,7 +2046,7 @@ class buildSection{
 		}
 
 		$s  = $s . "</div>\n\n";
-		$s  = $s . "<script language='javascript'>setStyle('$this->name','tag','$this->tag');</script>";
+		$s  = $s . "<script type='text/javascript'>setStyle('$this->name','tag','$this->tag');</script>";
 		return $s;
 	
     }
@@ -2125,39 +2095,39 @@ class buildObject{
 		if($this->tag == 'Field'){$this->value                 = $this->obj->ControlSource;}
 		if($this->tag == 'Graph'){$this->obj->BackColor        = 'black';}
 		if($this->tag == 'Graph'){$this->obj->ForeColor        = 'white';}
-		if($this->tag == 'Graph'){$this->obj->FontSize         = '10';}
+		if($this->tag == 'Graph'){$this->obj->FontSize         = '10px';}
 		if($this->tag == 'PageBreak'){$this->obj->BorderColor  = 'black';}
-		if($this->tag == 'PageBreak'){$this->obj->borderWidth  = '4';}
-		if($this->tag == 'PageBreak'){$this->obj->height       = 4  * resize();}
-		if($this->tag == 'PageBreak'){$this->obj->width        = 44 * resize();}
-		if($this->tag == 'PageBreak'){$this->obj->left         = 0  * resize();}
+		if($this->tag == 'PageBreak'){$this->obj->borderWidth  = '4px';}
+		if($this->tag == 'PageBreak'){$this->obj->height       = (4  * resize())."px";} //Nick 21/07/09 added ."px"
+		if($this->tag == 'PageBreak'){$this->obj->width        = (44 * resize())."px";} //Nick 21/07/09 added ."px"
+		if($this->tag == 'PageBreak'){$this->obj->left         = (0  * resize())."px";} //Nick 21/07/09 added ."px"
 		$this->name              = $this->obj->Name;
 
 		if(isNB()){ //-- is nuBuilder
 			if($this->tag == 'Graph'){$this->value             = $this->obj->Value;}
 			if($this->tag == 'Graph'){$this->graph             = $this->obj->Graph;}
-		    $this->font_size         = $this->obj->FontSize;
-			$this->top               = $this->obj->Top;
-			$this->left              = $this->obj->Left;
-			$this->width             = $this->obj->Width;
-			$this->height            = $this->obj->Height;
+		    $this->font_size         = parseInt($this->obj->FontSize)."px"; //Nick 21/07/09 wrapped in parseInt()."px"
+			$this->top               = parseInt($this->obj->Top)."px"; //Nick 21/07/09 wrapped in parseInt()."px"
+			$this->left              = parseInt($this->obj->Left)."px"; //Nick 21/07/09 wrapped in parseInt()."px"
+			$this->width             = parseInt($this->obj->Width)."px"; //Nick 21/07/09 wrapped in parseInt()."px"
+			$this->height            = parseInt($this->obj->Height)."px"; //Nick 21/07/09 wrapped in parseInt()."px"
 		}else{
 			if($this->tag == 'Graph'){$this->value             = $this->obj->Tag;}
 			if($this->tag == 'Graph'){$this->graph             = $this->obj->Name;}
 			if($this->font_family   == 'Arial'){
-			    $this->font_size     = floor($this->obj->FontSize  * 1.3);
+			    $this->font_size     = floor(parseInt($this->obj->FontSize)  * 1.3)."px"; //Nick 21/07/09 added ."px"
 			}else{
-			    $this->font_size     = floor($this->obj->FontSize  * 1.5);
+			    $this->font_size     = floor(parseInt($this->obj->FontSize)  * 1.5)."px"; //Nick 21/07/09 added ."px"
 			}
-			$this->top               = $this->obj->Top      * resize();
-			$this->left              = $this->obj->Left     * resize();
-			$this->width             = $this->obj->Width    * resize();
-			$this->height            = $this->obj->Height   * resize();
+			$this->top               = parseInt($this->obj->Top      * resize())."px"; //Nick 21/07/09 wrapped in parseInt()."px"
+			$this->left              = parseInt($this->obj->Left     * resize())."px"; //Nick 21/07/09 wrapped in parseInt()."px"
+			$this->width             = parseInt($this->obj->Width    * resize())."px"; //Nick 21/07/09 wrapped in parseInt()."px"
+			$this->height            = parseInt($this->obj->Height   * resize())."px"; //Nick 21/07/09 wrapped in parseInt()."px"
 		}
 
 		$this->color             = $this->obj->ForeColor;
 		$this->back_ground_color = $this->obj->BackColor;
-		$this->border_width      = $this->obj->BorderWidth;
+		$this->border_width      = parseInt($this->obj->BorderWidth)."px"; //Nick 21/07/09 wrapped in parseInt()."px"
 		$this->border_color      = $this->obj->BorderColor;
 		$this->border_style      = $this->obj->BorderStyle;
 		$this->can_grow          = $this->obj->CanGrow;
@@ -2199,8 +2169,8 @@ class buildObject{
 		$s  = $s . "                 background-color   : $this->back_ground_color;\n";
 		$s  = $s . "                 border-width       : $this->border_width;\n";
 		$s  = $s . "                 border-color       : $this->border_color;\n";
-		$s  = $s . "                 widthwas           : 0;\n";
-		$s  = $s . "                 colorwas           : 000000;\n";
+		$s  = $s . "                 widthwas           : $this->border_width;\n";
+		$s  = $s . "                 colorwas           : $this->border_color;\n";
 		$graphString = $this->graph;
 		if($this->tag == 'Graph'){
 			if($this->format == ''){$this->format = 'graph';}
@@ -2211,10 +2181,10 @@ class buildObject{
 		$s  = $s . "                 format             : $this->format;\n"; //this
 		$s  = $s . "                 text-align         : $this->text_align;'\n";
 
-		$s  = $s . "/>";
+		$s  = $s . ">";
 		//added in by nick. trying to get custom items to store in a hashmap. the items labelled "//this" above are custom things that need to be stored in the hash
 		//at a later date,  any code that touches custom style elements should be replaced with code that deals with the hash
-		$s  = $s . "<script language='javascript'>setupCustomStyle('$this->name','$this->name','$this->tag','$graphString','$this->tag','$this->value','$this->can_grow','$this->format');</script>\n\n\n";
+		$s  = $s . "<script type='text/javascript'>setupCustomStyle('$this->name','$this->name','$this->tag','$graphString','$this->tag','$this->value','$this->can_grow','$this->format');</script>\n\n\n";
 		return $s;
     }
 

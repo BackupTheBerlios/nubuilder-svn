@@ -3,7 +3,9 @@
 ** File:           common.php
 ** Author:         nuSoftware
 ** Created:        2007/04/26
-** Last modified:  2009/06/22
+** Last modified:  2009/07/15
+**
+** Copyright 2004, 2005, 2006, 2007, 2008, 2009 nuSoftware
 **
 ** This file is part of the nuBuilder source package and is licensed under the
 ** GPLv3. For support on developing in nuBuilder, please visit the nuBuilder
@@ -1371,6 +1373,17 @@ function getLib() {
 		$result .= "\n".$obj->slb_code;
         }
         return $result;
+}
+
+//added by Nick 21/07/09
+//takes a string, returns the first integer found within the string, as an integer/number
+//if the string has no numbers, return 0
+function parseInt($string) {
+	if(preg_match('/(\d+)/', $string, $array)) {
+		return $array[1];
+	} else {
+		return 0;
+	}
 }
 
 ?>

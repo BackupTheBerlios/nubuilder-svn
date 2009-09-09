@@ -3,7 +3,9 @@
 ** File:           report_object.php
 ** Author:         nuSoftware
 ** Created:        2007/04/26
-** Last modified:  2009/06/22
+** Last modified:  2009/07/15
+**
+** Copyright 2004, 2005, 2006, 2007, 2008, 2009 nuSoftware
 **
 ** This file is part of the nuBuilder source package and is licensed under the
 ** GPLv3. For support on developing in nuBuilder, please visit the nuBuilder
@@ -109,6 +111,7 @@ function build_report_object(){
 	$arrayOfHashVariables          = joinHashArrays($arrayOfHashVariables, $hashV);                  //--join the arrays together
 	$REPORT->tablesUsed            = getSelectionFormTempTableNames($form_ses, $v); //--temp tables to delete when finished
 	$formValue                     = $v;
+	$nuHashVariables               = $arrayOfHashVariables;   //--added by sc 23-07-2009
 	eval(replaceHashVariablesWithValues($arrayOfHashVariables, $activity->sat_report_data_code));
 	$REPORT->no_data               = addVariablesToTT($TT, $v);
 
@@ -1429,12 +1432,15 @@ class nuControl{
 	
     public function completed($sname){
 		$unused_lines = array_slice($this->text_string, $this->last_used + 1, 1000000);
-		return count($unused_lines) == 0;
+		return count($unused_lines) == 0 || $this->height < 1;
     }
 	
     public function get_lines($available_height){
-
-		$fittable_rows       = floor($available_height / $this->original_height);                      //-- rows that can fit before the next page break	
+		if($this->original_height != 0){
+			$fittable_rows       = floor($available_height / $this->original_height);                      //-- rows that can fit before the next page break	
+		}else{
+			$fittable_rows		 = 0;
+		}
 		$line_array          = array_slice($this->text_string, $this->last_used + 1, $fittable_rows);  //-- array of rows that will be used
 		$this->last_used     = $this->last_used + count($line_array);                                  //-- reset number of rows currently used
 		return $line_array;

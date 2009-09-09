@@ -1,4 +1,22 @@
 <?php
+/*
+** File:           form.php
+** Author:         nuSoftware
+** Created:        2007/04/26
+** Last modified:  2009/07/15
+**
+** Copyright 2004, 2005, 2006, 2007, 2008, 2009 nuSoftware
+**
+** This file is part of the nuBuilder source package and is licensed under the
+** GPLv3. For support on developing in nuBuilder, please visit the nuBuilder
+** wiki and forums. For details on contributing a patch for nuBuilder, please
+** visit the `Project Contributions' forum.
+**
+**   Website:  http://www.nubuilder.com
+**   Wiki:     http://wiki.nubuilder.com
+**   Forums:   http://forums.nubuilder.com
+*/
+
 session_start( );
 $GLOBALS['nuRunQuery']           = 0;
 $GLOBALS['formValues'][]         = 'xxx';
@@ -160,6 +178,7 @@ class Form{
 		$this->arrayOfHashVariables['#formSessionID#'] = $this->formsessionID;        //--form session id
 		$sVariables                                    = recordToHashArray('zzsys_session', 'zzsys_session_id', $ses);  //--session values (access level and user etc. )
 		$this->arrayOfHashVariables                    = joinHashArrays($this->arrayOfHashVariables, $sVariables);       //--join the arrays together
+		$nuHashVariables                               = $this->arrayOfHashVariables;   //--added by sc 23-07-2009
 //----------allow for custom code----------------------------------------------
         //--replace hash variables then run code
         $runCode                                   = replaceHashVariablesWithValues($this->arrayOfHashVariables, $this->form->sfo_custom_code_run_before_open);
@@ -288,7 +307,7 @@ class Form{
 					if($this->form->sfo_save_button    == '1' and displayCondition($this->arrayOfHashVariables, $this->form->sfo_save_button_display_condition)){
 						$title = iif($this->form->sfo_save_title == '','Save',$this->form->sfo_save_title);
 						if($this->setup->set_form_save_mouse_up==''){
-							$s   = $s . "<input type='button' accesskey='s' class='actionButton' value='$title' onclick='SaveThis(0)'/>&nbsp;$this->CRLF";
+							$s   = $s . "<input type='button' id = 'nuActionSave' accesskey='s' class='actionButton' value='$title' onclick='SaveThis(0)'/>&nbsp;$this->CRLF";
 						}else{
 							$s   = $s . "<img height='30' src='formimage.php?dir=$this->customDirectory&iid=" . $this->setup->set_form_save_mouse_up . "' alt='Save' onmouseup=\"this.src=getImage('" . $this->setup->set_form_save_mouse_up . "')\" onmouseout=\"this.src=getImage('" . $this->setup->set_form_save_mouse_up. "')\" onmousedown=\"this.src=getImage('" . $this->setup->set_form_save_mouse_down . "')\" onclick='SaveThis(0)'/>$this->CRLF";
 						}
@@ -296,7 +315,7 @@ class Form{
 					if($this->form->sfo_close_button    == '1' and displayCondition($this->arrayOfHashVariables, $this->form->sfo_close_button_display_condition)){
 						$title = iif($this->form->sfo_close_title == '','Save & Close',$this->form->sfo_close_title);
 						if($this->setup->set_form_close_mouse_up==''){
-							$s   = $s . "<input type='button' accesskey='s' class='actionButton' value='$title' onclick='SaveThis(1)'/>&nbsp;$this->CRLF";
+							$s   = $s . "<input type='button' id = 'nuActionSaveNClose' accesskey='s' class='actionButton' value='$title' onclick='SaveThis(1)'/>&nbsp;$this->CRLF";
 						}else{
 							$s   = $s . "<img height='30' src='formimage.php?dir=$this->customDirectory&iid=" . $this->setup->set_form_close_mouse_up . "' alt='Close' onmouseup=\"this.src=getImage('" . $this->setup->set_form_close_mouse_up . "')\" onmouseout=\"this.src=getImage('" . $this->setup->set_form_close_mouse_up. "')\" onmousedown=\"this.src=getImage('" . $this->setup->set_form_close_mouse_down . "')\" onclick='SaveThis(1)'/>$this->CRLF";
 						}
@@ -304,7 +323,7 @@ class Form{
 					if($this->form->sfo_clone_button   == '1' and $this->recordID <> '-1' and $this->cloning <> '1' and displayCondition($this->arrayOfHashVariables, $this->form->sfo_clone_button_display_condition)){
 						$title = iif($this->form->sfo_clone_title == '','Clone',$this->form->sfo_clone_title);
 						if($this->setup->set_form_clone_mouse_up==''){
-							$s   = $s . "<input type='button' class='actionButton' value='$title' onclick='CloneThis()'/>&nbsp;$this->CRLF";
+							$s   = $s . "<input type='button' id = 'nuActionClone' class='actionButton' value='$title' onclick='CloneThis()'/>&nbsp;$this->CRLF";
 						}else{
 							$s   = $s . "<img height='30' src='formimage.php?dir=$this->customDirectory&iid=" . $this->setup->set_form_clone_mouse_up . "' alt='Clone' onmouseup=\"this.src=getImage('" . $this->setup->set_form_clone_mouse_up . "')\" onmouseout=\"this.src=getImage('" . $this->setup->set_form_clone_mouse_up. "')\" onmousedown=\"this.src=getImage('" . $this->setup->set_form_clone_mouse_down . "')\" onclick='CloneThis()'/>$this->CRLF";
 						}
@@ -313,7 +332,7 @@ class Form{
 					while($r = db_fetch_object($t)){
 						if(displayCondition($this->arrayOfHashVariables, $r->sfa_button_display_condition)){
 							if($r->sfa_button_mouse_up_image==''){
-								$s   = $s . "<input type='button' class='actionButton' value='$r->sfa_button_title' onclick='$r->sfa_button_javascript'/>&nbsp;$this->CRLF";
+								$s   = $s . "<input type='button' id = 'nuCustomAction$r->sfa_button_title' class='actionButton' value='$r->sfa_button_title' onclick='$r->sfa_button_javascript'/>&nbsp;$this->CRLF";
 							}else{
 								$s   = $s . "<img height='30' src='formimage.php?dir=$this->customDirectory&iid=" . $r->sfa_button_mouse_up_image . "' alt='" . $r->sfa_button_title . "' onmouseup=\"this.src=getImage('" . $r->sfa_button_mouse_up_image . "')\" onmouseout=\"this.src=getImage('" . $r->sfa_button_mouse_up_image . "')\" onmousedown=\"this.src=getImage('" . $r->sfa_button_mouse_down_image . "')\" onclick='$r->sfa_button_javascript'/>$this->CRLF";
 							}
@@ -324,7 +343,7 @@ class Form{
 				if($this->delete == '1' or ($this->form->sfo_delete_button  == '1' and $this->recordID <> '-1' and $this->cloning <> '1' and displayCondition($this->arrayOfHashVariables, $this->form->sfo_delete_button_display_condition))){
 					$title = iif($this->form->sfo_delete_title == '','Delete',$this->form->sfo_delete_title);
 					if($this->setup->set_form_delete_mouse_up==''){
-						$s   = $s . "<input type='button' class='actionButton' value='Delete' onclick='DeleteThis()'/>&nbsp;$this->CRLF";
+						$s   = $s . "<input type='button' id = 'nuActionDelete' class='actionButton' value='Delete' onclick='DeleteThis()'/>&nbsp;$this->CRLF";
 					}else{
                         $s   = $s . "<img height='30' src='formimage.php?dir=$this->customDirectory&iid=" . $this->setup->set_form_delete_mouse_up . "' alt='Delete' onmouseup=\"this.src=getImage('" . $this->setup->set_form_delete_mouse_up . "')\" onmouseout=\"this.src=getImage('" . $this->setup->set_form_delete_mouse_up . "')\" onmousedown=\"this.src=getImage('" . $this->setup->set_form_delete_mouse_down . "')\" onclick='DeleteThis()'/>$this->CRLF";
 					}

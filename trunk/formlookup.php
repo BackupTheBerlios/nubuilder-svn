@@ -3,7 +3,9 @@
 ** File:           formlookup.php
 ** Author:         nuSoftware
 ** Created:        2007/04/26
-** Last modified:  2009/06/22
+** Last modified:  2009/07/15
+**
+** Copyright 2004, 2005, 2006, 2007, 2008, 2009 nuSoftware
 **
 ** This file is part of the nuBuilder source package and is licensed under the
 ** GPLv3. For support on developing in nuBuilder, please visit the nuBuilder
@@ -43,6 +45,7 @@ session_start( );
 	$sesVariables['#rowPrefix#']     = $prefix;
 	$sysVariables                    = sysVariablesToHashArray($form_ses);                            //--values in sysVariables from the calling lookup page
 	$arrayOfHashVariables            = joinHashArrays($sysVariables, $sesVariables);                  //--join the arrays together
+	$nuHashVariables                 = $arrayOfHashVariables;   //--added by sc 23-07-2009
 	//----------allow for custom code----------------------------------------------
 	$globalValue                     = getglobalValue($session);
 	eval(replaceHashVariablesWithValues($arrayOfHashVariables, $lookupForm->sfo_custom_code_run_before_browse));
